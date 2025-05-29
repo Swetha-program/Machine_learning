@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stroke Risk App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #1f0036, #5f0063, #b300b3);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 30px;
+            background-color: white;
+            color: black;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 60px auto;
+            background-color: transparent;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            width: 30%;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .form-input {
+            width: 70%;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        .note {
+            font-size: 0.85em;
+            color: #ccc;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #ffffff;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Navbar -->
+<div class="navbar">
+    <div style="font-weight: bold;">Stroke Risk Diagnosis</div>
+    <div class="dropdown">
+        <div onclick="toggleMenu()" style="cursor: pointer; font-size: 24px;">☰</div>
+        <div id="dropdownMenu" class="dropdown-menu">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+        </div>
+    </div>
+</div>
+
+<!-- Form Content -->
+<div class="form-container">
+    <form action="/predict" method="POST" onsubmit="return validateForm()">
+
+        <div class="form-row">
+            <label class="form-label">Gender</label>
+            <div class="form-input">
+                <input type="number" name="gender" min="0" max="1" required>
+                <div class="note">Enter 1 for Male, 0 for Female</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Age</label>
+            <div class="form-input">
+                <input type="number" name="age" min="0" step="1" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Hypertension</label>
+            <div class="form-input">
+                <input type="number" name="hypertension" min="0" max="1" required>
+                <div class="note">1 for Yes, 0 for No</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Heart Disease</label>
+            <div class="form-input">
+                <input type="number" name="heart_disease" min="0" max="1" required>
+                <div class="note">1 for Yes, 0 for No</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Ever Married</label>
+            <div class="form-input">
+                <input type="number" name="ever_married" min="0" max="1" required>
+                <div class="note">1 for Yes, 0 for No</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Work Type</label>
+            <div class="form-input">
+                <input type="number" name="work_type" min="0" max="4" required>
+                <div class="note">0: Govt, 1: Never worked, 2: Private, 3: Self-employed, 4: Children</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Residence Type</label>
+            <div class="form-input">
+                <input type="number" name="residence_type" min="0" max="1" required>
+                <div class="note">0: Rural, 1: Urban</div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Avg Glucose Level</label>
+            <div class="form-input">
+                <input type="number" name="avg_glucose_level" min="0" step="0.1" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">BMI</label>
+            <div class="form-input">
+                <input type="number" name="bmi" min="0" step="0.1" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <label class="form-label">Smoking Status</label>
+            <div class="form-input">
+                <input type="number" name="smoking_status" min="0" max="3" required>
+                <div class="note">0: Unknown, 1: Formerly, 2: Never, 3: Currently</div>
+            </div>
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<!-- JS for Dropdown -->
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById("dropdownMenu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function validateForm() {
+        const fields = [
+            { name: 'gender', min: 0, max: 1 },
+            { name: 'hypertension', min: 0, max: 1 },
+            { name: 'heart_disease', min: 0, max: 1 },
+            { name: 'ever_married', min: 0, max: 1 },
+            { name: 'work_type', min: 0, max: 4 },
+            { name: 'residence_type', min: 0, max: 1 },
+            { name: 'smoking_status', min: 0, max: 3 }
+        ];
+
+        for (let field of fields) {
+            const value = parseInt(document.forms[0][field.name].value);
+            if (value < field.min || value > field.max || isNaN(value)) {
+                alert(`Invalid input for ${field.name.replace('_', ' ')}. Enter a value between ${field.min} and ${field.max}.`);
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+
+</body>
+</html>
+
